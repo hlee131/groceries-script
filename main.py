@@ -5,6 +5,7 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
+from tqdm import tqdm
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
@@ -14,7 +15,7 @@ from selenium.common.exceptions import NoSuchElementException
 
 # We need to input a zip code for this to work
 chrome_options = Options()
-# chrome_options.add_argument('--headless')
+chrome_options.add_argument('--headless')
 driver = webdriver.Chrome(chrome_options=chrome_options)
 LINK = 'https://sayweee.com/en'
 PRODUCT_BASE_LINK = 'https://www.sayweee.com/product/view/'
@@ -112,26 +113,30 @@ time.sleep(1)
 # Click out of pop out ad 
 click_out()
 
-LINK_TEXTS = ['Fruit']
-""", 'Greens', 'Meat', 'Seafood',
+LINK_TEXTS = ['Fruit', 'Greens', 'Meat', 'Seafood', 'Restaurant',
             'Dim Sum', 'Ready-Made', 'Bakery', 'Snacks', 'Dairy',
-            'Dried Goods', 'Seasonings', 'Personal Care', 'Groceries']"""
-
+            'Dried Goods', 'Seasonings', 'Personal Care', 'Groceries']
 food_found = set()
 
 # Clicks on each predefined hyperlink
 for link in LINK_TEXTS:
-    page = driver.find_element_by_link_text(link)
-    page.click()
-    time.sleep(0.5)   # wait for page to load
-    back_times = scrape_page()
-    back_button = driver.find_element_by_class_name('back')
-    for i in range(back_times):
-        back_button.click()
+    trying = True
+    while trying:
+        try:
+            trying = False
+            page = driver.find_element_by_link_text(link)
+            page.click()
+            time.sleep(0.5)   # wait for page to load
+            back_times = scrape_page()
+            back_button = driver.find_element_by_class_name('back')
+            for i in range(back_times):
+                back_button.click()
 
-    time.sleep(1)
+            time.sleep(0.7)
+            click_out()
 
-    click_out()
+        except: 
+            click_out()
 
 record()
 
