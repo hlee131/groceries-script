@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+    <body style='background-color:#80e0a8;
+                width: 600px'>
+        <h1 style='text-align: center;'>
+            <img style='margin-left:auto;
+                        margin-right: auto;
+                        padding: 10px;
+                        width: 525px' src='https://workablehr.s3.amazonaws.com/uploads/account/logo/109004/logo'/>
+        </h1>
+        <h2 style='color: black;
+                    text-align: center'>The following products are currently available:</h2>
+        %s        
+    </body>
+</html>
