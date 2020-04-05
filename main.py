@@ -8,14 +8,15 @@ from email.mime.text import MIMEText
 from tqdm import tqdm
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as ExpectedConditions
 
 # We need to input a zip code for this to work
 chrome_options = Options()
-chrome_options.add_argument('--headless')
+# chrome_options.add_argument('--headless')
+chrome_options.add_argument('log-level=3')
 driver = webdriver.Chrome(chrome_options=chrome_options)
 LINK = 'https://sayweee.com/en'
 PRODUCT_BASE_LINK = 'https://www.sayweee.com/product/view/'
@@ -42,7 +43,7 @@ def sub_scrape(already_found, previously_found):
     products = driver.find_elements_by_class_name('product-media')
     for product in products:
         try:
-            tag = product.find_element_by_css_selector('div.sold-out-tag')
+            tag = product.find_element_by_css_selector('div.product-unavailable')
 
         except NoSuchElementException:    
             price = f"${product.get_attribute('data-product-price')}"
@@ -108,7 +109,7 @@ input.send_keys(ZIP)
 submit_button = driver.find_element_by_id('save-btn')
 
 # Wait for page to load
-time.sleep(1)
+time.sleep(0.2)
 
 # Click out of pop out ad 
 click_out()
@@ -119,14 +120,13 @@ LINK_TEXTS = ['Fruit', 'Greens', 'Meat', 'Seafood', 'Restaurant',
 food_found = set()
 
 # Clicks on each predefined hyperlink
-for link in LINK_TEXTS:
+for link in tqdm(LINK_TEXTS):
     trying = True
     while trying:
         try:
             trying = False
             page = driver.find_element_by_link_text(link)
             page.click()
-            time.sleep(0.5)   # wait for page to load
             back_times = scrape_page()
             back_button = driver.find_element_by_class_name('back')
             for i in range(back_times):
@@ -135,7 +135,7 @@ for link in LINK_TEXTS:
             time.sleep(0.7)
             click_out()
 
-        except: 
+        except:
             click_out()
 
 record()
@@ -167,6 +167,3 @@ def send(products):
         print('Didnt send')
 
 send(food_found)
-
-
-
